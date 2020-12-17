@@ -17,6 +17,7 @@ class ViewController: UIViewController {
     var arrResponse = Details()
     weak var tableView: UITableView!
     var networkStatus: NetworkReachability?
+    var activityView: UIActivityIndicatorView?
     
     // MARK: - View life cycle methods
     
@@ -66,8 +67,14 @@ class ViewController: UIViewController {
     // MARK: - Private functions
     
     private func updateUI(pullRefresh: Bool) {
+        DispatchQueue.main.async {
+            self.showActivityIndicator()
+        }
         let webservice = Webservice()
         guard (networkStatus?.networkAvailable()) == true else {
+            DispatchQueue.main.async {
+                self.hideActivityIndicator()
+            }
             return
         }
         webservice.getDetails { (response, _)  in
@@ -77,6 +84,7 @@ class ViewController: UIViewController {
                 self.updateNavTitle(strTitle: self.arrResponse.navTitle ?? "")
                 self.tableView.reloadData()
                 self.tableView.isHidden = false
+                self.hideActivityIndicator()
             }
         }
     }
@@ -89,6 +97,23 @@ class ViewController: UIViewController {
         titleLabel.text = strTitle
         titleLabel.backgroundColor = .clear
         navigationItem.titleView = titleLabel
+    }
+    
+    private func showActivityIndicator() {
+        if #available(iOS 12.0, *) {
+            activityView = UIActivityIndicatorView(style: .gray)
+        } else {
+            activityView = UIActivityIndicatorView(style: .large)
+        }
+        activityView?.center = self.view.center
+        self.view.addSubview(activityView!)
+        activityView?.startAnimating()
+    }
+    
+    private func hideActivityIndicator() {
+        if activityView != nil {
+            activityView?.stopAnimating()
+        }
     }
 }
 
