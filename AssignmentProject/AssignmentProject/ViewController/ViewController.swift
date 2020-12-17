@@ -42,6 +42,8 @@ class ViewController: UIViewController {
         }
     }
     
+    // MARK: - Private functions
+    
     private func configTableView() {
         self.tableView.register(UITableViewCell.self, forCellReuseIdentifier: "UITableViewCell")
         self.tableView.register(CustomCell.self, forCellReuseIdentifier: "CustomCell")
@@ -66,7 +68,10 @@ class ViewController: UIViewController {
         self.tableView = tableView
     }
     
-    // MARK: - Private functions
+    private func scrollToFirstRow() {
+        let indexPath = IndexPath(row: 0, section: 0)
+        self.tableView.scrollToRow(at: indexPath, at: .top, animated: true)
+    }
     
     private func updateUI(pullRefresh: Bool) {
         DispatchQueue.main.async {
@@ -93,6 +98,8 @@ class ViewController: UIViewController {
                 self.hideActivityIndicator()
                 if pullRefresh {
                     self.refreshControl.endRefreshing()
+                } else {
+                    self.scrollToFirstRow()
                 }
             }
         }

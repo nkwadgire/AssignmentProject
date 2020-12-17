@@ -2,7 +2,7 @@
 
 This repository contains a sample application which will fetch details using REST API and display on the screen.
 
-<img src="https://github.com/nkwadgire/AssignmentProject/blob/develop/Screenshots/AnimatedScreenshots.gif" height=500>
+<img src="https://github.com/nkwadgire/AssignmentProject/blob/develop/Screenshots/animatedGif.gif" height=500>
 
 **The app has following folder structure:**
 
