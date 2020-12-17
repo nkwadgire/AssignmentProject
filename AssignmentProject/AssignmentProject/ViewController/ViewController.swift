@@ -29,6 +29,7 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         networkStatus = NetworkReachability()
         self.configTableView()
+        self.updateUI(pullRefresh: false)
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -61,6 +62,23 @@ class ViewController: UIViewController {
         ])
         self.tableView = tableView
     }
+    
+    // MARK: - Private functions
+    
+    private func updateUI(pullRefresh: Bool) {
+        let webservice = Webservice()
+        guard (networkStatus?.networkAvailable()) == true else {
+            return
+        }
+        webservice.getDetails { (response, _)  in
+             self.arrResponse = response
+             self.arrResponse.details = response.details?.filter {($0 as Rows).rowTitle != nil}
+             DispatchQueue.main.async {
+                 self.tableView.reloadData()
+                 self.tableView.isHidden = false
+             }
+         }
+     }
 }
 
 extension ViewController: UITableViewDataSource {
