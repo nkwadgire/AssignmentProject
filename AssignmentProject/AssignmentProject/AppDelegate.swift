@@ -1,9 +1,15 @@
-//
-//  AppDelegate.swift
-//  AssignmentProject
-//
-//  Created by Nagraj Wadgire on 17/12/20.
-//
+/**
+*  * *****************************************************************************
+*  * Filename: AppDelegate.swift
+*  * Author  : Nagraj Wadgire
+*  * Creation Date: 17/12/19
+*  * *
+*  * *****************************************************************************
+*  * Description:
+*  * This class defined AppDelegate life cycle methods
+*  *                                                                             *
+*  * *****************************************************************************
+*/
 
 import UIKit
 

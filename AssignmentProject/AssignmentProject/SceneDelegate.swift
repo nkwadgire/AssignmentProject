@@ -1,9 +1,15 @@
-//
-//  SceneDelegate.swift
-//  AssignmentProject
-//
-//  Created by Nagraj Wadgire on 17/12/20.
-//
+/**
+*  * *****************************************************************************
+*  * Filename: SceneDelegate.swift
+*  * Author  : Nagraj Wadgire
+*  * Creation Date: 17/12/19
+*  * *
+*  * *****************************************************************************
+*  * Description:
+*  * This class defined SceneDelegate methods
+*  *                                                                             *
+*  * *****************************************************************************
+*/
 
 import UIKit
 
@@ -15,7 +21,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
         // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
-        guard let _ = (scene as? UIWindowScene) else { return }
+        guard (scene as? UIWindowScene) != nil else { return }
     }
 
     @available(iOS 13.0, *)
