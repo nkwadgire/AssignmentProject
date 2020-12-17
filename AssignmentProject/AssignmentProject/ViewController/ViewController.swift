@@ -71,14 +71,25 @@ class ViewController: UIViewController {
             return
         }
         webservice.getDetails { (response, _)  in
-             self.arrResponse = response
-             self.arrResponse.details = response.details?.filter {($0 as Rows).rowTitle != nil}
-             DispatchQueue.main.async {
-                 self.tableView.reloadData()
-                 self.tableView.isHidden = false
-             }
-         }
-     }
+            self.arrResponse = response
+            self.arrResponse.details = response.details?.filter {($0 as Rows).rowTitle != nil}
+            DispatchQueue.main.async {
+                self.updateNavTitle(strTitle: self.arrResponse.navTitle ?? "")
+                self.tableView.reloadData()
+                self.tableView.isHidden = false
+            }
+        }
+    }
+    
+    private func updateNavTitle(strTitle: String) {
+        navigationItem.title = nil
+        let titleLabel = UILabel()
+        titleLabel.font = UIFont(name: "HelveticaNeue-Bold", size: 26)
+        titleLabel.textColor = .black
+        titleLabel.text = strTitle
+        titleLabel.backgroundColor = .clear
+        navigationItem.titleView = titleLabel
+    }
 }
 
 extension ViewController: UITableViewDataSource {
