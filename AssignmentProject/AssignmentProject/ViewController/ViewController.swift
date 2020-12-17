@@ -16,6 +16,7 @@ import UIKit
 class ViewController: UIViewController {
     var arrResponse = Details()
     weak var tableView: UITableView!
+    var networkStatus: NetworkReachability?
     
     // MARK: - View life cycle methods
     
@@ -26,6 +27,7 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        networkStatus = NetworkReachability()
         self.configTableView()
     }
     
