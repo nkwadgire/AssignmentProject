@@ -18,6 +18,7 @@ class ViewController: UIViewController {
     weak var tableView: UITableView!
     var networkStatus: NetworkReachability?
     var activityView: UIActivityIndicatorView?
+    var refreshControl = UIRefreshControl()
     
     // MARK: - View life cycle methods
     
@@ -28,8 +29,9 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        networkStatus = NetworkReachability()
         self.configTableView()
+        self.addPullToRefresh()
+        self.addRefreshButton()
         self.updateUI(pullRefresh: false)
     }
     
@@ -71,8 +73,12 @@ class ViewController: UIViewController {
             self.showActivityIndicator()
         }
         let webservice = Webservice()
-        guard (networkStatus?.networkAvailable()) == true else {
+        guard (NetworkReachability.isConnectedToNetwork()) == true else {
             DispatchQueue.main.async {
+                if pullRefresh {
+                    self.refreshControl.endRefreshing()
+                }
+                self.showAlert()
                 self.hideActivityIndicator()
             }
             return
@@ -85,6 +91,9 @@ class ViewController: UIViewController {
                 self.tableView.reloadData()
                 self.tableView.isHidden = false
                 self.hideActivityIndicator()
+                if pullRefresh {
+                    self.refreshControl.endRefreshing()
+                }
             }
         }
     }
@@ -114,6 +123,33 @@ class ViewController: UIViewController {
         if activityView != nil {
             activityView?.stopAnimating()
         }
+    }
+    
+    private func addPullToRefresh() {
+        refreshControl.attributedTitle = NSAttributedString(string: Constants.pullToRefresh)
+        refreshControl.addTarget(self, action: #selector(self.refresh(_:)), for: .valueChanged)
+        tableView.addSubview(refreshControl)
+    }
+    private func addRefreshButton() {
+        let refreshImage = UIImage(named: "refresh")!.withRenderingMode(.alwaysOriginal)
+        let rightButton = UIBarButtonItem(image: refreshImage,
+                                          style: UIBarButtonItem.Style.plain,
+                                              target: self,
+                                              action: #selector(self.refresh(_:)))
+        navigationItem.rightBarButtonItem = rightButton
+    }
+    
+    private func showAlert() {
+        let alertController = UIAlertController(title: "", message: Constants.alertMessage, preferredStyle: .alert)
+        let action = UIAlertAction(title: "OK", style: .default) { _ in }
+        alertController.addAction(action)
+        self.present(alertController, animated: true, completion: nil)
+    }
+    
+    // MARK: - Selector methods
+    
+    @objc func refresh(_ sender: AnyObject) {
+        self.updateUI(pullRefresh: true)
     }
 }
 
