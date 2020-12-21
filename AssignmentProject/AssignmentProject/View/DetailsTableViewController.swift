@@ -66,11 +66,6 @@ class DetailsTableViewController: UIViewController {
         self.tableView = tableView
     }
     
-    private func scrollToFirstRow() {
-        let indexPath = IndexPath(row: 0, section: 0)
-        self.tableView.scrollToRow(at: indexPath, at: .top, animated: true)
-    }
-    
     private func updateUI(pullRefresh: Bool) {
         DispatchQueue.main.async {
             ActivityIndicatorView.shared.showActivityIndicator(inView: self.view)
@@ -94,7 +89,9 @@ class DetailsTableViewController: UIViewController {
                 if pullRefresh {
                     self.refreshControl.endRefreshing()
                 } else {
-                    self.scrollToFirstRow()
+                    DispatchQueue.main.asyncAfter(deadline: .now() + Constants.delay) {
+                        self.tableView.reloadData()
+                    }
                 }
                 ActivityIndicatorView.shared.hideActivityIndicator()
             }
@@ -109,6 +106,7 @@ class DetailsTableViewController: UIViewController {
         titleLabel.text = strTitle
         titleLabel.backgroundColor = .clear
         navigationItem.titleView = titleLabel
+        navigationController?.navigationBar.barTintColor = UIColor.white
     }
     
     private func addPullToRefresh() {
@@ -150,11 +148,11 @@ class DetailsTableViewController: UIViewController {
                 if error != nil && error?.localizedDescription == NetworkError.alertMessage {
                     self.showAlert(strError: error?.localizedDescription ?? "")
                 }
-            }
-            if let image = UIImage(data: imgData) {
-                completion(image)
-            } else {
-                completion(UIImage(named: "placeholder") ?? UIImage())
+                if let image = UIImage(data: imgData) {
+                    completion(image)
+                } else {
+                    completion(UIImage(named: "placeholder") ?? UIImage())
+                }
             }
         }
     }

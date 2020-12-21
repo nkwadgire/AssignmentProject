@@ -16,6 +16,7 @@ import Foundation
 public struct Constants {
     static let detailsURL: String = "https://dl.dropboxusercontent.com/s/2iodh4vg0eortkl/facts.json"
     static let pullToRefresh: String = "Pull to refresh"
+    static let delay = 0.10
 }
 
 public struct NetworkError {
