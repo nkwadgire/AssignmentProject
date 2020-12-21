@@ -28,6 +28,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         navigationController.viewControllers = [detailsTableViewController]
         
         window = UIWindow(frame: windowScene.coordinateSpace.bounds)
+        window?.backgroundColor = .white
         window?.windowScene = windowScene
         window?.rootViewController = navigationController
         window?.makeKeyAndVisible()

@@ -17,6 +17,7 @@ import UIKit
 class AppDelegate: UIResponder, UIApplicationDelegate, UIWindowSceneDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         let window: UIWindow? = UIWindow(frame: UIScreen.main.bounds)
+        window?.backgroundColor = .white
         let detailsTableViewController = DetailsTableViewController()
         let navigationController = UINavigationController()
         navigationController.viewControllers = [detailsTableViewController]
