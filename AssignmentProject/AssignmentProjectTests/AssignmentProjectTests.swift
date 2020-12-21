@@ -16,11 +16,13 @@ import XCTest
 
 class AssignmentProjectTests: XCTestCase {
 
-    var webservice: Webservice?
+    var webservice: WebserviceManager?
+  //  var networkStatus: NetworkReachability?
+    
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.
         super.setUp()
-        webservice = Webservice()
+        webservice = WebserviceManager()
     }
     
     override func tearDownWithError() throws {
@@ -29,7 +31,7 @@ class AssignmentProjectTests: XCTestCase {
     }
     
     func testGetDetailsWithExpectedURLHostAndPath() {
-        webservice?.getDetails(completion: {_, _  in
+        webservice?.getDetails(urlString: Constants.detailsURL, completionBlock: { _ in
         })
         XCTAssertEqual(webservice?.cachedUrl?.host, "dl.dropboxusercontent.com")
         XCTAssertEqual(webservice?.cachedUrl?.path, "/s/2iodh4vg0eortkl/facts.json")
@@ -37,13 +39,17 @@ class AssignmentProjectTests: XCTestCase {
     
     func testGetDetailsSuccessReturnsDetails() {
         let detailsExpectation = expectation(description: "details")
-        var detailsResponse: Details?
+        var detailsResponse: Data?
         
-        webservice?.getDetails(completion: {(response, _)  in
-            detailsResponse = response
-            detailsExpectation.fulfill()
+        webservice?.getDetails(urlString: Constants.detailsURL, completionBlock: { result in
+            switch result {
+            case .failure(let error):
+                print(error)
+            case .success(let data):
+                detailsResponse = data
+                detailsExpectation.fulfill()
+            }
         })
-        
         waitForExpectations(timeout: 5.0) { (_) in
             XCTAssertNotNil(detailsResponse)
         }
@@ -53,11 +59,16 @@ class AssignmentProjectTests: XCTestCase {
         let errorNotExpectation = expectation(description: "errorNil")
         var errorResponse: Error?
         
-        webservice?.getDetails { (_, error) in
-            errorResponse = error
+        webservice?.getDetails(urlString: Constants.detailsURL, completionBlock: { result in
+            switch result {
+            case .failure(let error):
+                errorResponse = error
+                print(error)
+            case .success:
+                print("success")
+            }
             errorNotExpectation.fulfill()
-        }
-        
+        })
         waitForExpectations(timeout: 5.0) { (_) in
             XCTAssertNil(errorResponse)
         }
@@ -67,12 +78,17 @@ class AssignmentProjectTests: XCTestCase {
         let error = NSError(domain: "error", code: 1234, userInfo: nil)
         let errorExpectation = expectation(description: "error")
         var errorResponse: Error?
-
-        webservice?.getDetails { (_, _) in
+        
+        webservice?.getDetails(urlString: Constants.detailsURL, completionBlock: { result in
+            switch result {
+            case .failure(let error):
+                print(error)
+            case .success:
+                print("success")
+            }
             errorResponse = error
             errorExpectation.fulfill()
-        }
-
+        })
         waitForExpectations(timeout: 5.0) { (_) in
             XCTAssertNotNil(errorResponse)
         }
@@ -81,10 +97,17 @@ class AssignmentProjectTests: XCTestCase {
     func testGetDetailsWhenEmptyDataReturnsNil() {
         let errorExpectation = expectation(description: "error")
         var errorResponse: Error?
-        webservice?.getDetails { (_, error) in
-            errorResponse = error
+        
+        webservice?.getDetails(urlString: Constants.detailsURL, completionBlock: { result in
+            switch result {
+            case .failure(let error):
+                errorResponse = error
+                print(error)
+            case .success:
+                print("success")
+            }
             errorExpectation.fulfill()
-        }
+        })
         waitForExpectations(timeout: 5.0) { (_) in
             XCTAssertNil(errorResponse)
         }
@@ -92,11 +115,26 @@ class AssignmentProjectTests: XCTestCase {
     
     func testGetDetailsSuccessReturnsRows() {
         let rowsExpectation = expectation(description: "rows")
+        var arrDetails: DetailsModel?
         var rowsResponse: [Rows]?
-        webservice?.getDetails { (response, _) in
-            rowsResponse = response.details
-            rowsExpectation.fulfill()
-        }
+        
+        webservice?.getDetails(urlString: Constants.detailsURL, completionBlock: { result in
+            switch result {
+            case .failure(let error):
+                print(error)
+            case .success(let data):
+                let decoder = JSONDecoder()
+                do {
+                    let strResponse = String(decoding: data, as: UTF8.self)
+                    let modifiedResponse = String(strResponse.filter { !"\n\t".contains($0) })
+                    let modifiedData = modifiedResponse.data(using: .utf8)
+                    arrDetails = try decoder.decode(DetailsModel.self, from: modifiedData ?? Data())
+                    rowsResponse = arrDetails?.details?.filter {($0 as Rows).rowTitle != nil}
+                    rowsExpectation.fulfill()
+                } catch {
+                }
+            }
+        })
         waitForExpectations(timeout: 5.0) { (_) in
             XCTAssertNotNil(rowsResponse)
         }
